@@ -269,7 +269,7 @@ Accounts with a missing or unmapped `account_region` are not sent to Slack. They
 The service supports two modes:
 
 - **Base URL mode** — set `SLACK_WEBHOOK_BASE_URL`. Posts to `{base_url}/{channel}`. Used with the included mock Slack server.
-- **Single webhook mode** — set `SLACK_WEBHOOK_URL`. Posts all alerts to one URL (real Slack).
+- **Single webhook mode** *(optional, not exercised)* — set `SLACK_WEBHOOK_URL`. Posts all alerts to one URL. Wiring is in place but untested against a live Slack workspace.
 
 If both are set, `SLACK_WEBHOOK_BASE_URL` takes precedence.
 
@@ -277,7 +277,7 @@ Retries on HTTP 429 and 5xx with exponential backoff. Honors `Retry-After` heade
 
 ### Mock Slack Server
 
-A lightweight mock server is included for local testing:
+A lightweight mock server is included for testing:
 
 ```bash
 uvicorn mock_slack.server:app --host 0.0.0.0 --port 9000

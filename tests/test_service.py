@@ -83,7 +83,7 @@ class TestRunHappyPath:
         service = _make_service(repo=repo, notifier=notifier)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
                 run_id = service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         assert run_id == "run-123"
@@ -97,7 +97,7 @@ class TestRunHappyPath:
         service = _make_service(repo=repo, notifier=notifier)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         notifier.send.assert_called_once_with("amer-risk-alerts", notifier.format.return_value)
@@ -114,7 +114,7 @@ class TestRunHappyPath:
         service = _make_service(repo=repo, notifier=notifier)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         _, status, _ = _update_counts_args(repo)
@@ -131,7 +131,7 @@ class TestRunHappyPath:
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
             with patch(PATCH_PROCESS, return_value=ReaderResults(
                 alerts=[_make_alert("acct-1"), _make_alert("acct-2")],
-                duplicate_count=0,
+                duplicate_count=0, rows_scanned=0,
             )):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
@@ -154,7 +154,7 @@ class TestRunReplay:
         service = _make_service(repo=repo, notifier=notifier)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         notifier.send.assert_not_called()
@@ -168,7 +168,7 @@ class TestRunReplay:
         service = _make_service(repo=repo)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         _, _, counts = _update_counts_args(repo)
@@ -185,7 +185,7 @@ class TestRunReplay:
         service = _make_service(repo=repo, notifier=notifier)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         notifier.send.assert_called_once()
@@ -204,7 +204,7 @@ class TestRunUnknownRegion:
         service = _make_service(repo=repo, notifier=notifier)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert(account_region="UNKNOWN")], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert(account_region="UNKNOWN")], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         notifier.send.assert_not_called()
@@ -216,7 +216,7 @@ class TestRunUnknownRegion:
         service = _make_service(repo=repo)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert(account_region="UNKNOWN")], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert(account_region="UNKNOWN")], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         assert repo.upsert_alert_outcome.call_args.kwargs["status"] == "failed"
@@ -230,7 +230,7 @@ class TestRunUnknownRegion:
         service = _make_service(repo=repo, notifier=notifier)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert(account_region=None)], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert(account_region=None)], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         notifier.send.assert_not_called()
@@ -245,7 +245,7 @@ class TestRunUnknownRegion:
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
             with patch(PATCH_PROCESS, return_value=ReaderResults(
                 alerts=[_make_alert(account_region=None)],
-                duplicate_count=0,
+                duplicate_count=0, rows_scanned=0,
             )):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
@@ -261,7 +261,7 @@ class TestRunUnknownRegion:
         alert = _make_alert(account_region=None)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[alert], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[alert], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         email_notifier.send_unknown_region_summary.assert_called_once()
@@ -283,7 +283,7 @@ class TestRunFailedSend:
         service = _make_service(repo=repo, notifier=notifier)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         assert repo.upsert_alert_outcome.call_args.kwargs["status"] == "failed"
@@ -298,7 +298,7 @@ class TestRunFailedSend:
         service = _make_service(repo=repo, notifier=notifier)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
         _, _, counts = _update_counts_args(repo)
@@ -316,7 +316,7 @@ class TestRunFailedSend:
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
             with patch(PATCH_PROCESS, return_value=ReaderResults(
                 alerts=[_make_alert("acct-1"), _make_alert("acct-2")],
-                duplicate_count=0,
+                duplicate_count=0, rows_scanned=0,
             )):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=False)
 
@@ -339,7 +339,7 @@ class TestRunDryRun:
         service = _make_service(repo=repo, notifier=notifier)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=True)
 
         notifier.send.assert_not_called()
@@ -351,7 +351,7 @@ class TestRunDryRun:
         service = _make_service(repo=repo)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
                 service.run("file:///data.parquet", date(2026, 1, 1), dry_run=True)
 
         assert repo.upsert_alert_outcome.call_args.kwargs["status"] == "not-sent"
@@ -370,8 +370,8 @@ class TestPreview:
         service = _make_service(repo=repo)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[alert], duplicate_count=0)):
-                result = service.preview("file:///data.parquet", date(2026, 1, 1), dry_run=False)
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[alert], duplicate_count=0, rows_scanned=0)):
+                result = service.preview("file:///data.parquet", date(2026, 1, 1))
 
         assert result == [alert]
 
@@ -383,8 +383,8 @@ class TestPreview:
         service = _make_service(repo=repo, notifier=notifier)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
-                service.preview("file:///data.parquet", date(2026, 1, 1), dry_run=False)
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
+                service.preview("file:///data.parquet", date(2026, 1, 1))
 
         notifier.send.assert_not_called()
 
@@ -395,8 +395,8 @@ class TestPreview:
         service = _make_service(repo=repo)
 
         with patch(PATCH_OPEN_URI, return_value=(MagicMock(), "fake/path")):
-            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0)):
-                service.preview("file:///data.parquet", date(2026, 1, 1), dry_run=False)
+            with patch(PATCH_PROCESS, return_value=ReaderResults(alerts=[_make_alert()], duplicate_count=0, rows_scanned=0)):
+                service.preview("file:///data.parquet", date(2026, 1, 1))
 
         repo.upsert_alert_outcome.assert_not_called()
 

@@ -70,7 +70,7 @@ def process_monthly_status(
     )
 
     if accounts_df.empty:
-        return ReaderResults(alerts=[], duplicate_count=0)
+        return ReaderResults(alerts=[], duplicate_count=0, rows_scanned=0)
     
     accounts_df["month"] = pd.to_datetime(accounts_df["month"]).dt.date
     accounts_df["renewal_date"] = pd.to_datetime(accounts_df["renewal_date"], errors="coerce").dt.date

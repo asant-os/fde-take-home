@@ -6,9 +6,9 @@ from unittest.mock import MagicMock, patch
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.dependencies import get_config
+from app.dependencies import get_config, get_repo
 from app.models import (
-    AlertRecord, RunCounts, RunStatusResponse, AlertOutcome
+    AlertRecord, RunCounts, RunStatusResponse
 )
 
 
@@ -124,29 +124,39 @@ class TestCreateRun:
 # ---------------------------------------------------------------------------
 # GET /runs/{run_id}
 # ---------------------------------------------------------------------------
-
 class TestGetRun:
     def test_returns_200_with_run_status(self, client):
-        with patch("app.main.AlertService") as MockService:
-            MockService.return_value.get_run.return_value = _make_run_status()
+        repo = MagicMock()
+        repo.get_run_status.return_value = _make_run_status()
+        app.dependency_overrides[get_repo] = lambda: repo
+        try:
             response = client.get("/runs/run-123")
+        finally:
+            app.dependency_overrides.pop(get_repo, None)
         assert response.status_code == 200
         assert response.json()["run_id"] == "run-123"
         assert response.json()["status"] == "succeeded"
 
     def test_returns_404_when_run_not_found(self, client):
-        with patch("app.main.AlertService") as MockService:
-            MockService.return_value.get_run.side_effect = ValueError("Run not found")
+        repo = MagicMock()
+        repo.get_run_status.return_value = None
+        app.dependency_overrides[get_repo] = lambda: repo
+        try:
             response = client.get("/runs/nonexistent")
+        finally:
+            app.dependency_overrides.pop(get_repo, None)
         assert response.status_code == 404
         assert "nonexistent" in response.json()["detail"]
 
     def test_returns_500_on_unexpected_error(self, client):
-        with patch("app.main.AlertService") as MockService:
-            MockService.return_value.get_run.side_effect = RuntimeError("db error")
+        repo = MagicMock()
+        repo.get_run_status.side_effect = RuntimeError("db error")
+        app.dependency_overrides[get_repo] = lambda: repo
+        try:
             response = client.get("/runs/run-123")
+        finally:
+            app.dependency_overrides.pop(get_repo, None)
         assert response.status_code == 500
-
 
 # ---------------------------------------------------------------------------
 # POST /preview
