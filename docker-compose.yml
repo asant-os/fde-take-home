@@ -1,0 +1,14 @@
+services:
+  risk-alert-service:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+      - .env.docker
+    volumes:
+      - ${GCP_KEY_PATH}:/secrets/gcp.json:ro
+      - ${PARQUET_PATH}:/data/monthly_account_status.parquet:ro
+      - ./risk_alerts.db:/app/risk_alerts.db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

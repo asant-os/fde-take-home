@@ -1,0 +1,7 @@
+{
+    "regions": {
+        "AMER": "amer-risk-alerts",
+        "EMEA": "emea-risk-alerts",
+        "APAC": "apac-risk-alerts"
+    }
+}

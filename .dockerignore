@@ -1,0 +1,7 @@
+.venv
+__pycache__
+*.pyc
+*.parquet
+.pytest_cache
+risk_alerts.db
+.env
