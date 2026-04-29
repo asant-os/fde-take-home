@@ -9,6 +9,5 @@ services:
     volumes:
       - ${GCP_KEY_PATH}:/secrets/gcp.json:ro
       - ${PARQUET_PATH}:/data/monthly_account_status.parquet:ro
-      - ./risk_alerts.db:/app/risk_alerts.db
     extra_hosts:
       - "host.docker.internal:host-gateway"
