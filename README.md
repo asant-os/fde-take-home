@@ -27,20 +27,24 @@ curl http://localhost:8000/health
 
 ### Environment Variables
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `SLACK_WEBHOOK_BASE_URL` | * | — | Base URL for mock/test Slack server. Takes precedence over `SLACK_WEBHOOK_URL`. |
-| `SLACK_WEBHOOK_URL` | * | — | Single Slack incoming webhook URL (real Slack). |
-| `DETAILS_BASE_URL` | No | `https://app.yourcompany.com` | Base URL for account detail links in alerts. |
-| `ARR_THRESHOLD` | No | `10000` | Minimum ARR (USD) to include in alerts. See note below. |
-| `HISTORY_MONTHS` | No | `24` | How many months of history to load for duration calculation. |
-| `SLACK_MAX_RETRIES` | No | `3` | Max retry attempts for failed Slack sends. |
-| `SLACK_BACKOFF_BASE` | No | `1.0` | Base backoff in seconds (doubles each retry). |
-| `SLACK_BACKOFF_MAX` | No | `30.0` | Maximum backoff cap in seconds. |
-| `SQLITE_PATH` | No | `./risk_alerts.db` | Path to SQLite database. |
-| `ESCALATION_EMAIL` | No | `support@quadsci.ai` | Email address for unknown-region escalation summary. |
-| `SAMPLE_LIMIT` | No | `5` | Max alerts/errors returned in `GET /runs/{id}` response. |
-| `GOOGLE_APPLICATION_CREDENTIALS` | GCS only | — | Path to GCP service account JSON. |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SLACK_WEBHOOK_BASE_URL` | — | Base URL for mock/test Slack server. Takes precedence over `SLACK_WEBHOOK_URL`. |
+| `SLACK_WEBHOOK_URL` | — | Single Slack incoming webhook URL (real Slack). |
+| `DETAILS_BASE_URL` | `https://app.yourcompany.com` | Base URL for account detail links in alerts. |
+| `ARR_THRESHOLD` | `10000` | Minimum ARR (USD) to include in alerts. See note below. |
+| `HISTORY_MONTHS` | `24` | How many months of history to load for duration calculation. |
+| `SLACK_MAX_RETRIES` | `3` | Max retry attempts for failed Slack sends. |
+| `SLACK_BACKOFF_BASE` | `1.0` | Base backoff in seconds (doubles each retry). |
+| `SLACK_BACKOFF_MAX` | `30.0` | Maximum backoff cap in seconds. |
+| `SQLITE_PATH` | `./risk_alerts.db` | Path to SQLite database. |
+| `ESCALATION_EMAIL` | `support@quadsci.ai` | Email address for unknown-region escalation summary. |
+| `SAMPLE_LIMIT` | `5` | Max alerts/errors returned in `GET /runs/{id}` response. |
+| `GOOGLE_APPLICATION_CREDENTIALS` | — | Path to GCP service account JSON. |
+| `AWS_ACCESS_KEY_ID` | - | Access ID
+| `AWS_SECRET_ACCESS_KEY` | - | Secret Key
+| `AWS_DEFAULT_REGION` | us-east-1 | AWS Region
+| `PARQUET_FILE` | - | Path to local parquet file. For docker use |
 
 *At least one Slack URL must be set. If both are set, `SLACK_WEBHOOK_BASE_URL` takes precedence.
 
@@ -308,15 +312,14 @@ uvicorn mock_slack.server:app --host 0.0.0.0 --port 9000
 
 ### Setup
 
-Create a `.env.docker` file (not committed) with your machine-specific paths:
+Create a `.env.docker` file (not committed) with your machine-specific paths (or you may export them / edit the .env file):
 
 ```bash
 # .env.docker
 GOOGLE_APPLICATION_CREDENTIALS=/secrets/gcp.json
 SLACK_WEBHOOK_BASE_URL=http://host.docker.internal:9000/slack/webhook
-GCP_KEY_PATH=/path/to/service_account.json
-PARQUET_PATH=/path/to/monthly_account_status.parquet
 ```
+
 
 Get your local paths with:
 ```bash
