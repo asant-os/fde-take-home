@@ -2,6 +2,10 @@
 
 Reads monthly account health data from Parquet, identifies at-risk accounts, and sends Slack alerts to region-specific channels. Supports re-running the same month safely — no duplicate alerts.
 
+## Architecture
+
+![Architecture diagram](docs/architecture.png)
+
 ---
 
 ## Quickstart (local)
